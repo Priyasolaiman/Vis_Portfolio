@@ -1,0 +1,23 @@
+---
+title: "Morjina Solaiman"
+image: Picture.jpg
+about:
+  template: jolla
+  links:
+    - icon: twitter
+      text: Goggle Scholar
+      href: https://scholar.google.com/citations?user=bmQ2FtcAAAAJ&hl=en
+    - icon: github
+      text: Github
+      href: https://github.com/Priyasolaiman
+---
+
+My name is Morjina Solaiman and I'm from Bangladesh. I'm doing my PhD in biological science at the University of Idaho.My research interest lies in male pregnancy of a very interesting fish from syngnathidae fish family. I love to travel, watch movies and stay in my cozy sweet home.
+
+## Education
+
+University of Idaho, Moscow, Idaho \| PhD in Biological Science \| August 2023 - May 2028
+
+University of Dhaka, Dhaka , Bangladesh \| M.S in Genetics & Molecular Biology \| January 2022 - July 2023
+
+University of Dhaka, Dhaka, Bangladesh \| B.S in Zoology \| January 2017 - December 2021

@@ -1,0 +1,182 @@
+---
+title: "Assignment 5"
+subtitle: "NHL Draft Analysis"
+author: "Morjina Solaiman"
+date: "2025-03-20"
+categories: [Assignment, Dataviz]
+code-fold: true
+code-tools: true
+format: html
+---
+
+## NHL Draft Analysis
+
+### Load the dataset and libraries
+
+```{r message=FALSE, warning=FALSE}
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+library(readxl)
+```
+
+```{r}
+#| message: false
+#| warning: false
+#Load the data
+Individual.Skater <- read.csv("SkaterIndividualstats.csv")
+OnIce.Skater <- read.csv("SkaterOnicestats.csv")
+Goalie <- read.csv("Goalies.csv")
+Individual.Skater.Rookie <- read.csv("RookieSkaterindividual.csv")
+OnIce.Skater.Rookie <- read.csv("RookieSkaterOnIce.csv")
+Rookie.Goalie <- read.csv("RookieGoalies.csv")
+```
+
+## VEZINA TROPHY
+
+Presented to the goaltender “adjudged to be the best at this position.” NHL general managers vote on this award.
+
+```{r}
+#| message: false
+#| warning: false
+Scale.Goalies <- Goalie %>%
+  filter(GP>25)
+
+ggplot(Scale.Goalies, aes(x = reorder(Player, SV.), y = SV.))+
+  geom_bar(stat = "identity", fill = "blue")+
+  coord_flip()
+ggplot(Scale.Goalies, aes(x = reorder(Player, -GAA), y = GAA))+
+  geom_bar(stat = "identity", fill = "navyblue")+
+  coord_flip()
+
+```
+
+## James Norris Memorial Trophy
+
+Awarded to the defenseman who demonstrates “the greatest all-around ability” at the position.
+
+```{r}
+#| message: false
+#| warning: false
+Norris.OnIce <- OnIce.Skater%>%
+  filter(Position == "D", GP > 30)%>%
+  mutate(scale.CF. = scale(CF.),
+         scale.xGF. = scale(xGF.))%>%
+  select(Player, Team, GP, CF., xGF., scale.CF., scale.xGF. )
+Norris.Indiv <- Individual.Skater%>%
+  filter(Position == "D", GP > 30)%>%
+  mutate(scale.Goals = scale(Goals),
+         scale.Assists = scale(Total.Assists))%>%
+  select(Player, Team, GP, Goals, Total.Assists, scale.Goals, scale.Assists )
+
+Norris<- Norris.OnIce%>%
+  left_join(Norris.Indiv, by = "Player")%>%
+  mutate(scale.Norris = scale.CF. + scale.xGF. + scale.Goals + scale.Assists)
+
+ggplot(Norris %>% filter(scale.Norris > 3), aes(x = scale.Goals, y = scale.Norris, label = Player)) +
+  geom_point(aes(color = scale.Norris), size = 3) +
+  geom_text(nudge_y = 0.05, size = 3) +  # Add player names to the scatter plot
+  scale_color_gradient(low = "lightblue", high = "darkblue") +
+  labs(
+    x = "Scaled Goals",
+    y = "Norris Score",
+    title = "Top Players for the James Norris Trophy",
+    subtitle = "Players with the highest Norris scores (2024-2025 season)") +
+  theme_minimal()
+
+```
+
+## Hart Memorial Trophy
+
+Awarded to the “player judged most valuable to his team.” This isn’t necessarily the best overall player, but rather the one who contributes most significantly to his team’s success.
+
+```{r}
+#| message: false
+#| warning: false
+Scale.OnIce <- OnIce.Skater %>% 
+  filter(GP > 40) %>% 
+  select(Player, Position, Team, CF., xGF.) %>%
+  mutate(Hart = xGF. + CF.)
+
+Top30.Players <- Scale.OnIce %>%
+  arrange(desc(Hart)) %>%  # Sort players by Hart score in descending order
+  head(30)
+
+ggplot(Top30.Players, aes(x = reorder(Player, Hart), y = Hart, size = xGF., color = Position)) +
+  geom_point() +  # Use points to represent players
+  coord_flip() +  # Flip the coordinates to make the plot horizontal
+  labs(x = "Player", y = "HART Score", size = "xGF Score", color = "Position") +
+  ggtitle("Top 30 Players by HART Score and xGF Score") +
+  theme_minimal()
+
+```
+
+## Calder Memorial Trophy
+
+Given to the player “adjudged to be the most proficient in his first year of competition.” This is essentially the rookie of the year award.
+
+```{r}
+#| message: false
+#| warning: false
+Calder <- Individual.Skater.Rookie %>% 
+  filter(GP > 35, Goals > 10 )
+
+ggplot(Calder, aes(x = reorder(Player, Total.Points), y = Total.Points))+
+  geom_bar(stat = "identity", fill = "skyblue")+
+  coord_flip()
+```
+
+## Frank J. Selke Trophy
+
+```{r}
+#| message: false
+#| warning: false
+Selke <- OnIce.Skater %>% 
+  filter(Position != "D", GP > 30, TOI > 1000 ) %>% 
+  mutate(Selke. = CF+SF) %>% 
+  filter(Selke. > 2000)
+
+ggplot(Selke, aes(x = reorder(Player, Selke.), y = Selke.)) +
+  geom_boxplot(
+    fill = "lightgreen",  # Color for the box
+    color = "darkgreen",  # Color for the border of the box
+    outlier.color = "red",  # Color for outliers
+    outlier.shape = 16,  # Shape for outliers
+    outlier.size = 3  # Size of the outliers
+  ) +
+  coord_flip() +
+  labs(
+    x = "Player", 
+    y = "Score", 
+    title = "Best Players for the Selke Trophy (2024-2025 Season)"
+  ) +
+  theme_minimal() +
+  theme(
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.text.y = element_text(size = 8)
+  )
+```
+
+## Lady Byng Memorial Trophy
+
+Presented to the player who exhibits “the best type of sportsmanship and gentlemanly conduct combined with a high standard of playing ability.”
+
+```{r}
+#| message: false
+#| warning: false
+Lady <- Individual.Skater %>% 
+  filter(TOI > 1000, Total.Points > 40, PIM < 20)
+
+ggplot(Lady, aes(x = Total.Points, y = PIM, label = Player)) +
+  geom_point(aes(color = Total.Points), size = 3) +
+  geom_text(nudge_y = 1, size = 3) +
+  labs(
+    title = "Lady Byng Trophy Candidates",
+    x = "Total Points",
+    y = "Penalty Minutes (PIM)",
+    color = "Total Points"
+  ) +
+  scale_color_gradient(low = "lightblue", high = "darkblue") +
+  theme_minimal()
+```

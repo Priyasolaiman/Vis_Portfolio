@@ -1,0 +1,81 @@
+---
+title: "Assignment 7"
+subtitle: " Network Data"
+author: "Morjina Solaiman"
+date: "2025-04-15"
+categories: "Assignment, Network Data, Code, Visualization"
+format: html
+code-fold: true
+code-tools: true
+description: "Network Data"
+---
+
+#Load the libraries
+
+```{r}
+#| message: false
+#| warning: false
+library(readxl)
+library(ggplot2)
+library(dplyr)
+library(igraph) #the core package for building and analyzing graphs
+library(tidygraph) #gives igraph objects a tidy/dataframe-like interface
+library(ggraph) #extends ggplot2 to visualize graphs/networks
+library(tidyverse)
+library(readr)
+
+```
+
+#Load The Data
+
+```{r}
+#| message: false
+#| warning: false
+#The excel file contains multiple sheets excel_sheets will load that
+sheet_names <- excel_sheets("Networksfixed.xlsx")
+
+#Read_excel now individually load the sheets
+people <- read_excel("Networksfixed.xlsx", sheet = "People")
+relations <- read_excel("Networksfixed.xlsx", sheet = "Relations" )
+interests <- read_excel("Networksfixed.xlsx", sheet = "Sheet1") %>% 
+  select(name =1, everything()) %>% # Ensure first column is named 'name'  
+  filter(!is.na(name)) # Remove empty rows
+
+```
+
+#First Creating a Academic Advisor Netwrok
+
+```{r}
+#| message: false
+#| warning: false
+
+# Clean and merge node attributes
+node_attributes <- people %>% 
+  left_join(interests, by = "name") %>% 
+  mutate(rank = factor(rank, levels = c("Professor", "Graduate")),
+         BCB520 = as.logical(BCB520))
+
+# Converts the relations data frame to a graph object where from is source nodes to is the target nodes and advisor is edge types
+
+network <- as_tbl_graph(relations) %>% 
+  left_join(node_attributes, by = c("name"= "name"))
+```
+
+```{r}
+#| message: false
+#| warning: false
+# Basic network visualization
+set.seed(123) # for reproducibility and this command is used to ensure reproducibility in R when your code involves random processes
+
+ggraph(network, layout = "fr")+ #can also use "lgl", "kk", "dh"  
+  geom_edge_link(aes(color = Advisor), 
+                 arrow = arrow(length = unit(2, 'mm')), 
+                 end_cap = circle(3, 'mm')) +
+  geom_node_point(aes(color = department, shape = rank), size = 5) +
+  geom_node_text(aes(label = name), size = 3, repel = TRUE) +
+  scale_shape_manual(values = c(Professor = 15, Graduate = 16)) +
+  theme_graph() +
+  labs(title = "Academic Advisor Network",
+       subtitle = "Nodes colored by department, shaped by rank",
+       edge_color = "Relationship Type")
+```

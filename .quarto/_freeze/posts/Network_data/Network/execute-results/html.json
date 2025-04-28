@@ -1,0 +1,17 @@
+{
+  "hash": "ea9791ea69a273456b5ca4857533c03c",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"Assignment 7\"\nsubtitle: \" Network Data\"\nauthor: \"Morjina Solaiman\"\ndate: \"2025-04-15\"\ncategories: \"Assignment, Network Data, Code, Visualization\"\nformat: html\ncode-fold: true\ncode-tools: true\ndescription: \"Network Data\"\n---\n\n\n\n#Load the libraries\n\n\n\n::: {.cell}\n\n```{.r .cell-code}\nlibrary(readxl)\nlibrary(ggplot2)\nlibrary(dplyr)\nlibrary(igraph) #the core package for building and analyzing graphs\nlibrary(tidygraph) #gives igraph objects a tidy/dataframe-like interface\nlibrary(ggraph) #extends ggplot2 to visualize graphs/networks\nlibrary(tidyverse)\nlibrary(readr)\n```\n:::\n\n\n\n#Load The Data\n\n\n\n::: {.cell}\n\n```{.r .cell-code}\n#The excel file contains multiple sheets excel_sheets will load that\nsheet_names <- excel_sheets(\"Networksfixed.xlsx\")\n\n#Read_excel now individually load the sheets\npeople <- read_excel(\"Networksfixed.xlsx\", sheet = \"People\")\nrelations <- read_excel(\"Networksfixed.xlsx\", sheet = \"Relations\" )\ninterests <- read_excel(\"Networksfixed.xlsx\", sheet = \"Sheet1\") %>% \n  select(name =1, everything()) %>% # Ensure first column is named 'name'  \n  filter(!is.na(name)) # Remove empty rows\n```\n:::\n\n\n\n#First Creating a Academic Advisor Netwrok\n\n\n\n::: {.cell}\n\n```{.r .cell-code}\n# Clean and merge node attributes\nnode_attributes <- people %>% \n  left_join(interests, by = \"name\") %>% \n  mutate(rank = factor(rank, levels = c(\"Professor\", \"Graduate\")),\n         BCB520 = as.logical(BCB520))\n\n# Converts the relations data frame to a graph object where from is source nodes to is the target nodes and advisor is edge types\n\nnetwork <- as_tbl_graph(relations) %>% \n  left_join(node_attributes, by = c(\"name\"= \"name\"))\n```\n:::\n\n::: {.cell}\n\n```{.r .cell-code}\n# Basic network visualization\nset.seed(123) # for reproducibility and this command is used to ensure reproducibility in R when your code involves random processes\n\nggraph(network, layout = \"fr\")+ #can also use \"lgl\", \"kk\", \"dh\"  \n  geom_edge_link(aes(color = Advisor), \n                 arrow = arrow(length = unit(2, 'mm')), \n                 end_cap = circle(3, 'mm')) +\n  geom_node_point(aes(color = department, shape = rank), size = 5) +\n  geom_node_text(aes(label = name), size = 3, repel = TRUE) +\n  scale_shape_manual(values = c(Professor = 15, Graduate = 16)) +\n  theme_graph() +\n  labs(title = \"Academic Advisor Network\",\n       subtitle = \"Nodes colored by department, shaped by rank\",\n       edge_color = \"Relationship Type\")\n```\n\n::: {.cell-output-display}\n![](Network_files/figure-html/unnamed-chunk-4-1.png){width=672}\n:::\n:::\n",
+    "supporting": [
+      "Network_files"
+    ],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

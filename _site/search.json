@@ -1,0 +1,114 @@
+[
+  {
+    "objectID": "posts/post-with-code/index.html",
+    "href": "posts/post-with-code/index.html",
+    "title": "Post With Code",
+    "section": "",
+    "text": "This is a post with executable code.\n\n1 + 1\n\n[1] 2"
+  },
+  {
+    "objectID": "posts/Marks and Channel/index.html",
+    "href": "posts/Marks and Channel/index.html",
+    "title": "Assignment 4",
+    "section": "",
+    "text": "For this assignment and for effectiveness and expressiveness part, I’m using my dataset that contains differentially expressed genes between ovaries and testis of a syngnathid fish. I have attached all the datasets used for this assignment in my marks and Channel folder.\nFirst load the packages and libraries.\n\n\nCode\n# Load necessary Libraries\nlibrary(DESeq2)\nlibrary(ggplot2)\nlibrary(dplyr)\nlibrary(tidyverse)\nlibrary(EnhancedVolcano)\nlibrary(gplots)\nlibrary(RColorBrewer)\n\n\n\n\nCode\n# Datasets ( Ovaries and Testis)\nres_SFO_vs_SNPT &lt;- read.csv(\"res_SFO_vs_SNPT.csv\", header = TRUE, row.names = 1, sep = \",\")\n\nres_SFO_vs_SPT &lt;-read.csv(\"res_SFO_vs_SPT.csv\", header = TRUE, row.names = 1, sep =\",\")\n\n\n\n\nCode\n#saveRDS(dds_ALL, file = \"dds_ALL.rds\")\ndds_ALL1 &lt;- readRDS(\"dds_ALL.rds\")"
+  },
+  {
+    "objectID": "posts/Marks and Channel/index.html#expressiveness-and-effectiveness",
+    "href": "posts/Marks and Channel/index.html#expressiveness-and-effectiveness",
+    "title": "Assignment 4",
+    "section": "Expressiveness and Effectiveness",
+    "text": "Expressiveness and Effectiveness\n\nFigure1\nIn my first figure I use colour hues to express effectively the result. Below you can see 3 differnt colours represent clustering of 3 different samples. SFO = Syngnathus Female Ovaries SNPT = Syngnathus Non Pregnant Testis SPT = Syngnathus Pregnant Testis. This colours cleary expressing how different ovaries and Testis.\n\n\nCode\n#rlog transform for application not for differential testing\nrld &lt;- rlog(dds_ALL1)\n\n\n\n\nCode\n#PCAplot, plotPCA which comes with DESeq2.\n# Run PCA and store the ggplot object\npca_plot &lt;- plotPCA(rld, intgroup = \"All_condition\")\n\n# Customize colors using ggplot2\npca_plot + scale_color_manual(values = c(\"red2\",\"blue\", \n                                          \"magenta2\"))+\n  labs(title = \"PCA Plot of S_ovaries and S_Testis\", \n       x = \"PC1:84% Variance\", \n       y = \"PC2:4% Variance\", \n       color = \"Sample Groups\") +  # Add legend title\n  theme_minimal()\n\n\n\n\n\n\n\n\n\n\n\nFigure 2\nIn figure 2 we can see the violations of the principle of expressiveness and effectivemness. As, now we can’t differentiate which one what and thus can’t say if it’s clustering or not. I used points as the marks which all identical and that’s why meaningless.And the channel is colour which I used same blue colour for every sample making it hard to distinguish the cluster.\n\n\nCode\npca_plot + \n  scale_color_manual(values = c(\"blue\", \"blue\", \"blue\"))+\n  labs(title = \"PCA Plot\",\n       x = \"PC2: 99% Variance\",  # Incorrect variance\n       y = \"PC1: 1% Variance\",   # Swapped values to mislead\n       color = \"Totally Random Groups\") +  # Meaningless legend\n  theme(\n    panel.background = element_rect(fill = \"grey\"),  # Extreme background color\n    plot.title = element_text(size = 40, color = \"red\", face = \"bold\"),  # Overpowering title\n    axis.text = element_text(size = 10, color = \"white\"),\n    legend.position = \"none\")"
+  },
+  {
+    "objectID": "posts/Marks and Channel/index.html#discriminability",
+    "href": "posts/Marks and Channel/index.html#discriminability",
+    "title": "Assignment 4",
+    "section": "Discriminability",
+    "text": "Discriminability\n\nFigure 3\nFor the second part I tried to see the overall distribution of genes in ovaries and testis. I use bars as the marks and and length/height as channel\n\n\nCode\nS_ovaries &lt;- read.csv(\"final_count_ss_ovaries.csv\", header = TRUE, row.names = 1, sep = \",\")\nS_testes_oldref &lt;- read.csv(\"final_count_ss_testes_oldrefgen.csv\", header = TRUE, row.names = 1, sep =\",\")\n\n#Histogram to check overall gene distribution\n#making a dataframe of sum of all row count\nS_tst_hist &lt;- data.frame(rowSums(S_testes_oldref)) \nS_ov_hist &lt;- data.frame(rowSums(S_ovaries))\n\n#changing the column names\nnames(S_tst_hist)[1] &lt;- \"c1\"\nnames(S_ov_hist)[1] &lt;- \"c3\"\n\nx_limits &lt;- c(1, 1e07)  # Adjust based on your data range\ny_limits &lt;- c(0, 1000)   # Adjust to match both plots\ny_breaks &lt;- seq(0, 1000, by = 250)  # Ensure consistent y-axis breaks\nx_breaks &lt;- c(10, 1000, 100000, 1e07)  # Adjust log-scale\n\n# Example for first dataset\nggplot(S_tst_hist, aes(x = c1)) + \n  geom_histogram(fill = \"blue4\", color = \"black\", bins = 100) +\n  scale_x_log10(limits = x_limits, breaks = x_breaks) + \n  scale_y_continuous(limits = y_limits, breaks = y_breaks) + \n  labs(title = \"Distribution of Overall Gene Counts Across S.scoveli Testis\", \n       x = \"Log(total counts)\", y = \"Frequency\") +\n  theme_gray()\n\n\n\n\n\n\n\n\n\n\n\nFigure 4\nIn the figure 4 it violated the discriminability, Beacuse you can’t properly measure the frequency of genes and overall distribution.\n\n\nCode\nS_ovaries &lt;- read.csv(\"final_count_ss_ovaries.csv\", header = TRUE, row.names = 1, sep = \",\")\nS_testes_oldref &lt;- read.csv(\"final_count_ss_testes_oldrefgen.csv\", header = TRUE, row.names = 1, sep =\",\")\n\n#Histogram to check overall gene distribution\n#making a dataframe of sum of all row count\nS_tst_hist &lt;- data.frame(rowSums(S_testes_oldref)) \nS_ov_hist &lt;- data.frame(rowSums(S_ovaries))\n\n#changing the column names\nnames(S_tst_hist)[1] &lt;- \"c1\"\nnames(S_ov_hist)[1] &lt;- \"c3\"\n\nx_limits &lt;- c(1, 1e07)  # Adjust based on your data range\ny_limits &lt;- c(0, 1000)   # Adjust to match both plots\ny_breaks &lt;- seq(0, 1000, by = 250)  # Ensure consistent y-axis breaks\nx_breaks &lt;- c(10, 1000, 100000, 1e07)  # Adjust log-scale\n\n# Example for first dataset\nggplot(S_tst_hist, aes(x = c1)) + \n  geom_histogram(fill= \"blue4\",color = \"black\",bins = 1000)+\n  scale_x_log10(limits = x_limits, breaks = x_breaks) + \n  scale_y_continuous(limits = y_limits, breaks = y_breaks) + \n  labs(title = \"Distribution of Overall Gene Counts Across S.scoveli Testis\", \n       x = \"Log(total counts)\", y = \"Frequency\") +\n  theme_gray()"
+  },
+  {
+    "objectID": "posts/Marks and Channel/index.html#separability",
+    "href": "posts/Marks and Channel/index.html#separability",
+    "title": "Assignment 4",
+    "section": "Separability",
+    "text": "Separability\n\nFigure 5\nIn the separability part, I choose rectangular cells as marks and colour gradient as channels. In the figure is showing clearly some genes are really off in ovaries while those genes are on in testis making it clear that this dimporphic tissues have so many genes that expressed differntially.\n\n\nCode\ntopVarGenes &lt;- head( order( rowVars( assay(rld) ), decreasing=TRUE ), 35 )\nheatmap.2(assay(rld)[topVarGenes, ], \n          scale = \"row\", trace = \"none\", \n          dendrogram = \"column\", \n          col = colorRampPalette(rev(brewer.pal(9, \"RdBu\")))(255),\n          cexRow = 0.6,  # Adjust row label size\n          cexCol = 0.7,\n          main = \"S_Ov vs S_T\")  # Adjust column label size)\n\n\n\n\n\n\n\n\n\n\n\nFigure 6/Heat Mess\n\n\nCode\nheatmap.2(assay(rld)[topVarGenes, ], \n          scale = \"column\",  # Scale by column, which distorts comparisons\n          trace = \"both\",  # Add excessive trace lines\n          dendrogram = \"none\",  # Remove dendrograms to make the relationships unclear\n          col = colorRampPalette(rev(brewer.pal(9, \"RdGy\")))(255),  # Poor color choice with low contrast\n          cexRow = 2,  # Excessive row label size that clutters the plot\n          cexCol = 2,  # Excessive column label size that clutters the plot\n          main = \"S_Ov vs S_T (Bad Plot)\",  # A non-informative, cluttered title\n          density.info = \"none\",  # Remove density information for confusion\n          key.title = \"Expression Levels\",  # Confusing legend title\n          key.xlab = \"Expression\",  # Unclear labeling\n          key.ylab = \"Samples\")  # Unnecessary Y-axis label in the legend"
+  },
+  {
+    "objectID": "posts/Marks and Channel/index.html#popout",
+    "href": "posts/Marks and Channel/index.html#popout",
+    "title": "Assignment 4",
+    "section": "PopOut",
+    "text": "PopOut\n\nFigure 7\nFor popout I used points as marks and colour as channel.\n\n\nCode\nlibrary(DESeq2)\n\ndds_SFL_vs_SPL &lt;- readRDS(\"dds_SFL_vs_SPL.rds\")\nres_SFL_vs_SPL &lt;- results(dds_SFL_vs_SPL)\n\n#plotting\n#MA plot, x axis = mean expression & y axix = log2fold, c(-5,5) means log2fold value -5 to +5\n\nplotMA(res_SFL_vs_SPL, ylim = c(-5,5), main = \"Female vs Pregnant Male Liver\")\n\n\n\n\n\n\n\n\n\n\n\nFigure 8\nIn this figure I tried to violate the principles of Popout, making it hard to ditinguish what we are looking for. I tried to remove the blue popout colour but it’s not working. However now I expand the y-axis too much which shrinks the genes in a way that we can’t say which genes are differntially expressed and which are not. Figure 8 sucks because all marks are clumped together, and made the plot meaningless to explain.\n\n\nCode\n# Remove axis labels, use non-informative colors, set extreme point sizes, and distort y-axis\nplotMA(res_SFL_vs_SPL, \n       ylim = c(-5000000, 5000000),  # Overly exaggerated y-axis\n       main = \"\",\n       cex = 2)  # Extremely large points that overlap"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "Morjina Solaiman",
+    "section": "",
+    "text": "My name is Morjina Solaiman and I’m from Bangladesh. I’m doing my PhD in biological science at the University of Idaho.My research interest lies in male pregnancy of a very interesting fish from syngnathidae fish family. I love to travel, watch movies and stay in my cozy sweet home."
+  },
+  {
+    "objectID": "about.html#education",
+    "href": "about.html#education",
+    "title": "Morjina Solaiman",
+    "section": "Education",
+    "text": "Education\nUniversity of Idaho, Moscow, Idaho | PhD in Biological Science | August 2023 - May 2028\nUniversity of Dhaka, Dhaka , Bangladesh | M.S in Genetics & Molecular Biology | January 2022 - July 2023\nUniversity of Dhaka, Dhaka, Bangladesh | B.S in Zoology | January 2017 - December 2021"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Data",
+    "section": "",
+    "text": "Post With Code\n\n\n\n\n\n\nnews\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\nApr 14, 2025\n\n\nHarlow Malloc\n\n\n\n\n\n\n\n\n\n\n\n\nAssignment 5\n\n\nNHL Draft Analysis\n\n\n\nAssignment\n\n\nDataviz\n\n\n\n\n\n\n\n\n\nMar 3, 2025\n\n\nMorjina Solaiman\n\n\n\n\n\n\n\n\n\n\n\n\nAssignment 4\n\n\nMarks and Channel\n\n\n\nAssignment, Data Visualization\n\n\n\nHeatMap or HeatMess\n\n\n\n\n\nFeb 20, 2025\n\n\nMorjina Solaiman\n\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "posts/NHL draft analysis/NHL.html",
+    "href": "posts/NHL draft analysis/NHL.html",
+    "title": "Assignment 5",
+    "section": "",
+    "text": "Code\nlibrary(dplyr)\nlibrary(tidyverse)\nlibrary(ggplot2)\nlibrary(readxl)\nNHLdraft &lt;- read.csv(\"NHLdraft.csv\")\nNHLdraftstats &lt;- read.csv(\"NHLdraftstats.csv\")\nNHLdictionary &lt;- read_xlsx(\"NHLDictionary.xlsx\")\nknitr::kable(NHLdictionary)\n\n\n\n\n\n\n\n\n\n\nAttribute\nType\nDescription\n\n\n\n\ndraftyear\nOrdinal\nCalendar year in which the player was drafted into the NHL.\n\n\nname\nItem\nFull name of the player.\n\n\nround\nOrdinal\nRound in which the player was drafted (1 to 7).\n\n\noverall\nOrdinal\nOverall draft position of the player (1 to 224)\n\n\npickinRound\nOrdinal\nPosition in which the player was drafted in their round (1 to 32).\n\n\nheight\nQuantitative\nPlayer height in inches.\n\n\nweight\nQuantitative\nPlayer weight in pounds.\n\n\nposition\nCategorical\nPlayer position (Forward, Defense, Goaltender)\n\n\nplayerId\nItem\nUnique ID (key) assigned to each player.\n\n\npostdraft\nOrdinal\nNumber of seasons since being drafted (0 to 20).\n\n\nNHLgames\nQuantitative\nNumber of games played in the NHL in that particular season (regular season is 82 games, playoffs are up to 28 more).\n\n\n\n\n\n\n\nCode\nView(NHLdraft)\nView(NHLdraftstats)\nView(NHLdictionary)\n\n\nVisualization of games played by drafted player in 2022\n\n\nCode\ndraftNHL &lt;- NHLdraftstats %&gt;% \n  select(name, round, overall, draftyear, position) %&gt;% \n  group_by(name, round, overall, draftyear, position)\n\ndraft2022 &lt;- NHLdraft %&gt;% \n  filter(draftyear == 2022 & postdraft == 0)\nggplot(draft2022, aes(x = round, y = NHLgames, color = overall))+\n  geom_point()+\n  geom_jitter(width = 0.2, alpha = 0.7, height = 0.5)+\n  labs(title = \"NHL draft Analysis of 2022\",\n       x = \"Hockey Games Round\",\n       y = \"NHLgames\")\n\n\n\n\n\n\n\n\n\nFigure1 : This figure shows the number of NHL games played by players drafted in June 2022, categorized by draft round. Each point represents a player, and jittering has been applied to reduce overplotting. The visualization highlights how most drafted players do not immediately play in the NHL"
+  },
+  {
+    "objectID": "posts/NHL draft analysis/NHL.html#nhl-draft-analysis",
+    "href": "posts/NHL draft analysis/NHL.html#nhl-draft-analysis",
+    "title": "Assignment 5",
+    "section": "",
+    "text": "Code\nlibrary(dplyr)\nlibrary(tidyverse)\nlibrary(ggplot2)\nlibrary(readxl)\nNHLdraft &lt;- read.csv(\"NHLdraft.csv\")\nNHLdraftstats &lt;- read.csv(\"NHLdraftstats.csv\")\nNHLdictionary &lt;- read_xlsx(\"NHLDictionary.xlsx\")\nknitr::kable(NHLdictionary)\n\n\n\n\n\n\n\n\n\n\nAttribute\nType\nDescription\n\n\n\n\ndraftyear\nOrdinal\nCalendar year in which the player was drafted into the NHL.\n\n\nname\nItem\nFull name of the player.\n\n\nround\nOrdinal\nRound in which the player was drafted (1 to 7).\n\n\noverall\nOrdinal\nOverall draft position of the player (1 to 224)\n\n\npickinRound\nOrdinal\nPosition in which the player was drafted in their round (1 to 32).\n\n\nheight\nQuantitative\nPlayer height in inches.\n\n\nweight\nQuantitative\nPlayer weight in pounds.\n\n\nposition\nCategorical\nPlayer position (Forward, Defense, Goaltender)\n\n\nplayerId\nItem\nUnique ID (key) assigned to each player.\n\n\npostdraft\nOrdinal\nNumber of seasons since being drafted (0 to 20).\n\n\nNHLgames\nQuantitative\nNumber of games played in the NHL in that particular season (regular season is 82 games, playoffs are up to 28 more).\n\n\n\n\n\n\n\nCode\nView(NHLdraft)\nView(NHLdraftstats)\nView(NHLdictionary)\n\n\nVisualization of games played by drafted player in 2022\n\n\nCode\ndraftNHL &lt;- NHLdraftstats %&gt;% \n  select(name, round, overall, draftyear, position) %&gt;% \n  group_by(name, round, overall, draftyear, position)\n\ndraft2022 &lt;- NHLdraft %&gt;% \n  filter(draftyear == 2022 & postdraft == 0)\nggplot(draft2022, aes(x = round, y = NHLgames, color = overall))+\n  geom_point()+\n  geom_jitter(width = 0.2, alpha = 0.7, height = 0.5)+\n  labs(title = \"NHL draft Analysis of 2022\",\n       x = \"Hockey Games Round\",\n       y = \"NHLgames\")\n\n\n\n\n\n\n\n\n\nFigure1 : This figure shows the number of NHL games played by players drafted in June 2022, categorized by draft round. Each point represents a player, and jittering has been applied to reduce overplotting. The visualization highlights how most drafted players do not immediately play in the NHL"
+  },
+  {
+    "objectID": "posts/NHL draft analysis/NHL.html#expanded-scatterplot",
+    "href": "posts/NHL draft analysis/NHL.html#expanded-scatterplot",
+    "title": "Assignment 5",
+    "section": "Expanded Scatterplot",
+    "text": "Expanded Scatterplot\n\n\nCode\ndraft2018 &lt;- NHLdraftstats %&gt;% \n  filter(draftyear == 2018 & postdraft &lt; 6)\nggplot(draft2018, aes(x = round, y = NHLgames, color = postdraft))+\n  geom_point()\n\n\n\n\n\n\n\n\n\n\n\nCode\ndrafttot2018 &lt;- draft2018 %&gt;% \n  group_by(playerId,round, overall, position, name) %&gt;% \n  summarise(totgames = sum(NHLgames))\n\n\n`summarise()` has grouped output by 'playerId', 'round', 'overall', 'position'.\nYou can override using the `.groups` argument.\n\n\nCode\nggplot(drafttot2018, aes(x = round, y = totgames))+\n  geom_point()"
+  },
+  {
+    "objectID": "posts/NHL draft analysis/NHL.html#scatterplot-with-overall-draft-position",
+    "href": "posts/NHL draft analysis/NHL.html#scatterplot-with-overall-draft-position",
+    "title": "Assignment 5",
+    "section": "Scatterplot with overall draft position",
+    "text": "Scatterplot with overall draft position\n\n\nCode\nggplot(drafttot2018, aes(x = overall, y = totgames))+\n  geom_point()"
+  },
+  {
+    "objectID": "posts/NHL draft analysis/NHL.html#scatterplot-summary",
+    "href": "posts/NHL draft analysis/NHL.html#scatterplot-summary",
+    "title": "Assignment 5",
+    "section": "Scatterplot summary",
+    "text": "Scatterplot summary\n\n\nCode\nggplot(drafttot2018, aes(x = overall, y = totgames))+\n  geom_point()+\n  geom_smooth()\n\n\n`geom_smooth()` using method = 'loess' and formula = 'y ~ x'\n\n\n\n\n\n\n\n\n\n\n\nCode\ndrafttot &lt;- NHLdraft %&gt;% \n  filter(postdraft &lt; 8) %&gt;% \n  group_by(playerId, round, overall, position, name) %&gt;% \n  summarise(totgames = sum(NHLgames))\n\n\n`summarise()` has grouped output by 'playerId', 'round', 'overall', 'position'.\nYou can override using the `.groups` argument.\n\n\nCode\nggplot(drafttot, aes(x = overall, y = totgames))+\n  geom_smooth(se = FALSE)\n\n\n`geom_smooth()` using method = 'gam' and formula = 'y ~ s(x, bs = \"cs\")'\n\n\n\n\n\n\n\n\n\nAverage number of games played as a function\n\n\nCode\nNHLdraftstats &lt;- read.csv(\"NHLdraftstats.csv\")\nEL &lt;- NHLdraftstats %&gt;% \n  filter(name == \"Elias Lindholm\")\n\nggplot(NHLdraftstats %&gt;% \n         filter(position == \"Forward\"),\n       aes(x = postdraft, y = points))+\n  geom_smooth(aes(color = as.factor(round)))+\n  geom_point(data = EL, aes(x = postdraft, y = points), color = \"red\")\n\n\n`geom_smooth()` using method = 'gam' and formula = 'y ~ s(x, bs = \"cs\")'\n\n\n\n\n\n\n\n\n\n\n\nCode\nEL &lt;-  NHLdraftstats %&gt;%\n  filter(name == \"Elias Lindholm\")\npick_31_range &lt;-  NHLdraftstats %&gt;% \n  filter()"
+  },
+  {
+    "objectID": "posts/NHL draft analysis/NHL.html#barplot",
+    "href": "posts/NHL draft analysis/NHL.html#barplot",
+    "title": "Assignment 5",
+    "section": "Barplot",
+    "text": "Barplot\n\n\nCode\ndrafttot2018 %&gt;% filter(totgames &gt; 15 & position == \"Forward\") %&gt;%  ggplot(aes( y = reorder(name, totgames), x = totgames))+\n  geom_col(color = \"white\", fill = \"blue4\")+\n  labs(title = \"Total games played by individual player in 2018\",\n       y = \"Player Names\", x = \"Total Games\")+\n  theme(axis.text.x = element_text(angle = 90),\n        legend.title = element_blank())"
+  },
+  {
+    "objectID": "posts/NHL draft analysis/NHL.html#stacked-bar-chart",
+    "href": "posts/NHL draft analysis/NHL.html#stacked-bar-chart",
+    "title": "Assignment 5",
+    "section": "Stacked Bar Chart",
+    "text": "Stacked Bar Chart\n\n\nCode\nggplot(draft2018, aes(x = postdraft, y = NHLgames, fill = as.factor(-round)))+\n  geom_col(position = \"stack\")\n\n\n\n\n\n\n\n\n\n\n\nCode\nNHLdraft1 &lt;- NHLdraft %&gt;% \n  mutate(descround = desc(as.factor(round)))\n\nrounds &lt;- c(\"darkred\", \"blue\", \"red\", \"darkblue\", \"pink\", \"violet\", \"lightblue\")\n\nggplot(NHLdraft, aes(x = postdraft, y = NHLgames, fill = as.factor(-round)))+\n  geom_col(position = \"stack\")+\n  labs(title = \"Pattern of play after drafting\",\n       x = \"PostDraft\",\n       y = \"Number of NHLgames\")+\n  theme(legend.position = \"none\")"
+  }
+]

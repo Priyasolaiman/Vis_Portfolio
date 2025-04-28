@@ -1,0 +1,35 @@
+{
+  "about.qmd": {
+    "about.html": "66a0ac75"
+  },
+  "index.qmd": {
+    "index.html": "ff7ea305"
+  },
+  "posts/Marks and Channel/index.qmd": {
+    "index.html": "ce7df5f4"
+  },
+  "posts/NHL draft analysis/DataDictionary (1).qmd": {
+    "DataDictionary (1).html": "2e0eca1f"
+  },
+  "posts/NHL draft analysis/DataDictionary.qmd": {
+    "DataDictionary.html": "804e5ac4"
+  },
+  "posts/NHL draft analysis/index (1).qmd": {
+    "index (1).html": "4b1ca9f2"
+  },
+  "posts/NHL draft analysis/NHL.qmd": {
+    "NHL.html": "d151560a"
+  },
+  "posts/welcome/index.qmd": {
+    "index.html": "cc1568d1"
+  },
+  "posts/post-with-code/index.qmd": {
+    "index.html": "64ed8180"
+  },
+  "posts/NHL_Trophy/NHL_trophy.qmd": {
+    "NHL_trophy.html": "f87fb7c3"
+  },
+  "posts/Network_data/Network.qmd": {
+    "Network.html": "e53a59ce"
+  }
+}
